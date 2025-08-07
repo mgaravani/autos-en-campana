@@ -37,10 +37,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     mainImg.style.height = 'auto';
     // Tomar la primera imagen como principal
     const imagenes = Array.isArray(vehiculo.imagenes) ? vehiculo.imagenes : [];
+    let currentIndex = 0;
     if (imagenes.length) {
       mainImg.src = imagenes[0];
     } else {
       mainImg.src = 'https://source.unsplash.com/featured/800x600/?car';
+    }
+    // Función para actualizar la imagen principal y el estado de las miniaturas
+    function updateMain(index) {
+      if (!imagenes.length) return;
+      currentIndex = (index + imagenes.length) % imagenes.length;
+      mainImg.src = imagenes[currentIndex];
+      // Actualizar clases activas en miniaturas
+      const allThumbs = thumbs.querySelectorAll('img');
+      allThumbs.forEach((t) => t.classList.remove('active'));
+      const currentThumb = allThumbs[currentIndex];
+      if (currentThumb) currentThumb.classList.add('active');
     }
     // Crear miniaturas y permitir seleccionar la imagen principal.
     imagenes.forEach((imgSrc, idx) => {
@@ -52,14 +64,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         thumb.classList.add('active');
       }
       thumb.addEventListener('click', () => {
-        mainImg.src = imgSrc;
-        // Actualizar clases activas
-        const allThumbs = thumbs.querySelectorAll('img');
-        allThumbs.forEach((t) => t.classList.remove('active'));
-        thumb.classList.add('active');
+        updateMain(idx);
       });
       thumbs.appendChild(thumb);
     });
+    // Flechas de navegación
+    if (imagenes.length > 1) {
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'nav-arrow prev';
+      prevBtn.type = 'button';
+      prevBtn.innerHTML = '&lsaquo;';
+      prevBtn.addEventListener('click', () => {
+        updateMain(currentIndex - 1);
+      });
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'nav-arrow next';
+      nextBtn.type = 'button';
+      nextBtn.innerHTML = '&rsaquo;';
+      nextBtn.addEventListener('click', () => {
+        updateMain(currentIndex + 1);
+      });
+      mainSection.appendChild(prevBtn);
+      mainSection.appendChild(nextBtn);
+    }
     // Información del vehículo
     const info = document.createElement('div');
     info.className = 'info-section';

@@ -590,22 +590,9 @@
         img.style.objectPosition = val + '% ' + selectedImages[idx].offsetY + '%';
       });
       wrapper.appendChild(sliderX);
-      // Controles para mover y eliminar imágenes
+      // Controles para eliminar la imagen
       const controls = document.createElement('div');
       controls.className = 'preview-controls';
-      // Botón mover a la izquierda
-      const moveLeft = document.createElement('button');
-      moveLeft.type = 'button';
-      moveLeft.className = 'move-left';
-      moveLeft.textContent = '‹';
-      moveLeft.addEventListener('click', () => {
-        if (index > 0) {
-          // Intercambiar con la imagen anterior
-          [selectedImages[index - 1], selectedImages[index]] = [selectedImages[index], selectedImages[index - 1]];
-          updatePreviewImages();
-        }
-      });
-      controls.appendChild(moveLeft);
       // Botón eliminar
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
@@ -616,19 +603,31 @@
         updatePreviewImages();
       });
       controls.appendChild(removeBtn);
-      // Botón mover a la derecha
-      const moveRight = document.createElement('button');
-      moveRight.type = 'button';
-      moveRight.className = 'move-right';
-      moveRight.textContent = '›';
-      moveRight.addEventListener('click', () => {
-        if (index < selectedImages.length - 1) {
-          [selectedImages[index], selectedImages[index + 1]] = [selectedImages[index + 1], selectedImages[index]];
+      wrapper.appendChild(controls);
+      // Habilitar reordenamiento por arrastre
+      wrapper.draggable = true;
+      wrapper.dataset.index = index;
+      wrapper.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', index.toString());
+        // Añadir clase para estilizar el elemento arrastrado
+        wrapper.classList.add('dragging');
+      });
+      wrapper.addEventListener('dragend', () => {
+        wrapper.classList.remove('dragging');
+      });
+      wrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+      wrapper.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        const toIndex = parseInt(wrapper.dataset.index, 10);
+        if (!isNaN(fromIndex) && !isNaN(toIndex) && fromIndex !== toIndex) {
+          const [moved] = selectedImages.splice(fromIndex, 1);
+          selectedImages.splice(toIndex, 0, moved);
           updatePreviewImages();
         }
       });
-      controls.appendChild(moveRight);
-      wrapper.appendChild(controls);
       preview.appendChild(wrapper);
     });
   }
