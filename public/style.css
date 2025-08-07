@@ -1,0 +1,772 @@
+/*
+ * Estilos personalizados para el sitio "Autos en Campana".
+ *
+ * Este tema adopta una estética moderna y minimalista inspirada
+ * en los colores del logotipo: tonos grises con acentos rojos.
+ * Se utilizan variables CSS para facilitar la personalización y se
+ * aplica un diseño responsivo para adaptarse a diferentes
+ * dispositivos. La tipografía se basa en Montserrat para títulos
+ * llamativos y Roboto para textos legibles.
+ */
+
+/* Variables de color */
+:root {
+  --color-primary: #222831; /* fondo oscuro (header y hero) */
+  --color-secondary: #f7f7f7; /* fondos claros */
+  --color-accent: #c0392b; /* rojo apagado para acentos */
+  --color-accent-hover: #a93226; /* color de acento al pasar el ratón */
+  --color-text: #2c3e50; /* texto principal */
+  --color-muted: #7f8c8d; /* texto secundario */
+  --radius: 8px;
+}
+
+/* Reset básico */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-secondary);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Contenedor universal */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------
+   Encabezado
+------------------------------------------------------------------ */
+header {
+  background-color: var(--color-primary);
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Aumentar el tamaño del logo en el encabezado para hacerlo más visible.
+   Se mantiene la proporción y se deja espacio extra a los lados al crecer
+   el contenedor. */
+.logo {
+  /* Aumentamos ligeramente la altura del logo para que destaque más en el header */
+  height: 90px;
+  width: auto;
+}
+
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+}
+
+.main-nav a {
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+  color: var(--color-accent);
+}
+
+/* ------------------------------------------------------------------
+   Hero / Inicio
+------------------------------------------------------------------ */
+.hero {
+  position: relative;
+  background-image: url('https://source.unsplash.com/1600x900/?showroom,cars');
+  background-size: cover;
+  background-position: center;
+  /* Ampliamos el alto del hero para que la sección inicial se sienta más
+     protagonista y menos vacía. El fondo sigue ocupando toda la sección. */
+  /* Incrementamos la altura del hero para darle mayor presencia visual */
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  margin-top: 70px; /* Compensar header fijo */
+}
+
+.hero .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(34, 40, 49, 0.7);
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-family: 'Montserrat', sans-serif;
+  /* Un tamaño mayor para el título principal del hero */
+  font-size: 3.6rem;
+  margin-bottom: 12px;
+}
+
+.hero .tagline {
+  /* Hacemos la tagline más grande para llenar mejor el espacio */
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.hero .financing {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  color: #e5e5e5;
+}
+
+.btn-cta {
+  background-color: var(--color-accent);
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cta:hover {
+  background-color: var(--color-accent-hover);
+}
+
+/* ------------------------------------------------------------------
+   Secciones generales
+------------------------------------------------------------------ */
+section {
+  padding: 60px 0;
+}
+
+section h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: var(--color-primary);
+}
+
+/* ------------------------------------------------------------------
+   Vehículos destacados y listados
+------------------------------------------------------------------ */
+.vehiculos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.vehiculo-card {
+  background-color: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* necesario para etiquetas absolutas */
+  cursor: pointer; /* indica que es clickeable para ver detalles */
+}
+
+.vehiculo-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mostrar la imagen completa dentro de la tarjeta sin recortarla.
+   Utilizamos object-fit: contain para que la imagen se adapte a la
+   anchura disponible conservando su proporción. La altura máxima se
+   limita para mantener consistencia entre tarjetas. */
+.vehiculo-card img {
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+.vehiculo-detalle {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vehiculo-detalle h3 {
+  margin: 0 0 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  color: var(--color-primary);
+}
+
+.vehiculo-detalle .vehiculo-precio {
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 5px;
+}
+
+.vehiculo-detalle p {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-bottom: 3px;
+}
+
+/* Etiqueta de destacado */
+.etiqueta-destacado {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: var(--color-accent);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: var(--radius);
+  z-index: 2;
+}
+
+/* ------------------------------------------------------------------
+   Filtros
+------------------------------------------------------------------ */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: center;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.filtro-item label {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: var(--color-muted);
+}
+
+.filtro-select,
+.filtro-item input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background-color: #fdfdfd;
+}
+
+.btn-small {
+  padding: 8px 15px;
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background-color 0.3s ease;
+}
+
+.btn-small:hover {
+  background-color: var(--color-accent-hover);
+}
+
+/* Botón de enlace estilizado para opciones secundarias (como cerrar o cancelar) */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border-radius: var(--radius);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-accent-hover);
+}
+
+/* ------------------------------------------------------------------
+   Contacto
+------------------------------------------------------------------ */
+.contacto-section {
+  background-color: #fff;
+}
+
+.contacto-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.contacto-info h2 {
+  margin-bottom: 15px;
+  color: var(--color-primary);
+}
+
+.contacto-info p {
+  margin-bottom: 10px;
+  color: var(--color-text);
+}
+
+.contacto-info a {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+/* Redes sociales: mostrar ícono y texto juntos */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  color: var(--color-accent);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Iconos de redes sociales: ajustamos el tamaño para que resulten
+   visualmente equilibrados respecto al texto y mantenemos su color
+   de acento. */
+.social-links i {
+  /* Incrementamos el tamaño de los íconos y aseguramos que tengan el color
+     de acento. El margen entre icono y texto se gestiona en el enlace. */
+  font-size: 1.5rem;
+  color: var(--color-accent);
+}
+
+.contacto-map iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+  border-radius: var(--radius);
+}
+
+/* ------------------------------------------------------------------
+   Footer
+------------------------------------------------------------------ */
+footer {
+  background-color: var(--color-primary);
+  color: #fff;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------
+   Panel de administrador
+------------------------------------------------------------------ */
+.admin-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.admin-modal {
+  background-color: #fff;
+  width: 90%;
+  max-width: 600px;
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative; /* para posicionar el botón de cierre */
+}
+
+.admin-login label,
+.admin-dashboard label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  margin-top: 10px;
+}
+
+.admin-login input,
+.admin-dashboard input,
+.admin-dashboard select,
+.admin-dashboard textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.admin-login input {
+  margin-bottom: 10px;
+}
+
+/* Botón de cierre en el modal de administración */
+.cerrar-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: var(--color-accent);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.cerrar-modal:hover {
+  color: var(--color-accent-hover);
+}
+
+.admin-dashboard .form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.admin-dashboard .form-field {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-dashboard textarea {
+  resize: vertical;
+}
+
+.drop-area {
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.drop-area.dragover {
+  background-color: #f0f0f0;
+}
+
+#file-input {
+  display: none;
+}
+
+.preview-imagenes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* Cada elemento de vista previa contiene una miniatura y un slider de recorte */
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.preview-imagenes img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+  margin-bottom: 4px;
+}
+
+/* Controles de recorte y reordenamiento debajo de cada miniatura */
+.preview-controls {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.move-left,
+.move-right,
+.remove-btn {
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.move-left:hover,
+.move-right:hover,
+.remove-btn:hover {
+  background-color: var(--color-accent-hover);
+}
+/* Estilos para los sliders de recorte de imágenes en la vista previa */
+.crop-slider {
+  width: 100px;
+  margin-bottom: 4px;
+}
+
+.admin-lista {
+  margin-top: 15px;
+}
+
+.admin-lista-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fdfdfd;
+  padding: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #eee;
+  border-radius: var(--radius);
+}
+
+.admin-lista-item span {
+  font-size: 0.9rem;
+}
+
+.admin-lista-item button {
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-lista-item button:hover {
+  background-color: var(--color-accent-hover);
+}
+
+/* Ocultar elementos */
+.hidden {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------------
+   Enlace secreto de administrador
+------------------------------------------------------------------ */
+/* El enlace al panel de administración se presenta como un icono de rueda
+   dentada en la esquina inferior derecha. Su opacidad es baja para
+   pasar desapercibido, pero al pasar el ratón se hace visible. */
+/* Enlace secreto del administrador
+   Situado discretamente en la esquina superior derecha de la página.
+   Se utiliza `position: fixed` para que permanezca siempre visible,
+   pero con baja opacidad para no distraer al visitante. Al pasar el ratón
+   por encima aumenta ligeramente su opacidad para indicar que es interactivo. */
+.admin-secret {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 500;
+  /* Ampliamos el tamaño del engranaje y lo dejamos en la esquina superior
+     derecha. Se mantiene un color de acento y una opacidad moderada para que
+     sea visible pero no intrusivo. */
+  font-size: 26px;
+  color: var(--color-accent);
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+.admin-secret:hover {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------
+   Página de detalle
+   Diseñamos una galería con miniaturas a la izquierda y una imagen
+   principal moderada a la derecha, similar a portales de anuncios de autos.
+------------------------------------------------------------------ */
+.detalle-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Columna de miniaturas */
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100px;
+  overflow-y: auto;
+}
+
+.thumbnails .thumbnail {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.thumbnails .thumbnail:hover,
+.thumbnails .thumbnail.active {
+  border-color: var(--color-accent);
+}
+
+/* Sección principal con imagen grande e información */
+.main-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detalle-main-img {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+
+.info-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.info-section h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: var(--color-primary);
+}
+
+.info-section p {
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.btn-whatsapp {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #25d366;
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+.btn-whatsapp:hover {
+  background-color: #1ebc57;
+}
+
+/* ------------------------------------------------------------------
+   Página de detalle: contenedor y enlace de regreso
+------------------------------------------------------------------ */
+.detalle-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.volver-link {
+  display: inline-block;
+  margin: 1rem 0;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.volver-link:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ------------------------------------------------------------------
+   Responsividad
+------------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+  .hero .tagline {
+    font-size: 1rem;
+  }
+  .contacto-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Centrar el botón de aplicación de filtros en su propia fila */
+.filtro-boton {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  width: 100%;
+}

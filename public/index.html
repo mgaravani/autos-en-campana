@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autos en Campana</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons for social media (inline svg fallback) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-pbS3Qh9AGf6u29Ns6N9f1clJL3RPPvlVtgq5DP70PJpF6DGFV+fToPpTcy/7qIRF11RexIk0Ea6q79G1hvuM3A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container header-container">
+        <a href="#inicio" class="logo-wrap">
+          <img src="assets/logo-blanco.png" alt="Autos en Campana" class="logo" />
+        </a>
+        <nav class="main-nav">
+          <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#vehiculos">Nuestros vehículos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+        <!-- Enlace secreto del administrador: engranaje semioculto en la esquina superior derecha -->
+        <a href="#" id="admin-toggle" class="admin-secret" title="Administrador">
+          <!-- Utilizamos un carácter unicode de engranaje como fallback para
+               asegurar que el icono siempre sea visible incluso si la fuente
+               de Font Awesome no está disponible. -->
+          &#9881;
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero / Inicio -->
+    <section id="inicio" class="hero">
+      <div class="overlay"></div>
+      <div class="container hero-content">
+        <h1>Autos en Campana</h1>
+        <!-- Tagline inicial: retiramos la referencia a "garantía" para reflejar
+             la solicitud del usuario. Ahora invitamos al visitante a conocer
+             nuestra trayectoria sin prometer garantía sobre usados. -->
+        <p class="tagline">
+          Más de 35 años de trayectoria ofreciendo vehículos nuevos y usados.
+        </p>
+        <p class="financing">
+          Planes de financiación a partir de 2009 en adelante. La cotización y
+          simulación se realizan de forma presencial en nuestra agencia.
+        </p>
+        <a href="#vehiculos" class="btn-cta">Explorar vehículos</a>
+      </div>
+    </section>
+
+    <!-- Vehículos Destacados -->
+    <section class="destacados-section">
+      <div class="container">
+        <h2>Vehículos Destacados</h2>
+        <div id="destacados-container" class="vehiculos-grid"></div>
+      </div>
+    </section>
+
+    <!-- Nuestros vehículos con filtros -->
+    <section id="vehiculos" class="vehiculos-section">
+      <div class="container">
+        <h2>Nuestros vehículos</h2>
+        <div class="filtros">
+          <div class="filtro-item">
+            <label for="filtro-marca">Marca</label>
+            <select id="filtro-marca" class="filtro-select">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div class="filtro-item">
+            <label for="filtro-anio">Año</label>
+            <select id="filtro-anio" class="filtro-select">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="filtro-item">
+            <label for="filtro-precio">Precio máximo</label>
+            <input
+              type="number"
+              id="filtro-precio"
+              placeholder="Sin límite"
+            />
+          </div>
+          <div class="filtro-item">
+            <label for="filtro-km">Kilómetros máximos</label>
+            <input
+              type="number"
+              id="filtro-km"
+              placeholder="Sin límite"
+            />
+          </div>
+          <div class="filtro-item filtro-boton">
+            <button id="btn-aplicar-filtros" class="btn-small">
+              Aplicar filtros
+            </button>
+          </div>
+          <!-- Botón para limpiar filtros -->
+          <div class="filtro-item filtro-boton">
+            <button id="btn-clear-filtros" class="btn-link">
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+        <div id="vehiculos-container" class="vehiculos-grid"></div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="contacto-section">
+      <div class="container contacto-wrapper">
+        <div class="contacto-info">
+          <h2>Contáctanos</h2>
+          <p>
+            Teléfono / Whatsapp:
+            <a
+              href="https://wa.me/543489639033"
+              target="_blank"
+              rel="noopener"
+              >3489 639033</a
+            >
+          </p>
+          <p>Dirección: Castelli 739, Campana, Buenos Aires</p>
+          <p>Horario: 9:30 hs – 12 hs y 17 hs – 19 hs</p>
+          <div class="social-links">
+            <a
+              href="https://www.facebook.com/AUTOSENCAMPANA?locale=es_LA"
+              target="_blank"
+              rel="noopener"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook"></i> Facebook</a
+            >
+            <a
+              href="https://www.instagram.com/autosencampana/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i> Instagram</a
+            >
+            <a
+              href="https://wa.me/543489639033"
+              target="_blank"
+              rel="noopener"
+              aria-label="Whatsapp"
+              ><i class="fab fa-whatsapp"></i> WhatsApp</a
+            >
+          </div>
+        </div>
+        <div class="contacto-map">
+          <!-- Embed Google Maps iframe -->
+          <iframe
+            src="https://maps.google.com/maps?q=Castelli%20739,%20Campana&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <p>© 2025 Autos en Campana. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+
+    <!-- Admin Panel (hidden by default) -->
+    <div id="admin-overlay" class="admin-overlay">
+      <div class="admin-modal">
+        <!-- Botón para cerrar el panel de administración sin cerrar sesión -->
+        <button id="btn-cerrar-modal" class="cerrar-modal" title="Cerrar">×</button>
+        <!-- Login form (initially shown) -->
+        <div id="admin-login" class="admin-login">
+          <h3>Acceso administrador</h3>
+          <label for="admin-user">Usuario</label>
+          <input type="text" id="admin-user" />
+          <label for="admin-pass">Contraseña</label>
+          <input type="password" id="admin-pass" />
+          <button id="btn-login" class="btn-small">Ingresar</button>
+          <button id="btn-cerrar-admin" class="btn-link">Cerrar</button>
+        </div>
+        <!-- Admin dashboard (shown after login) -->
+        <div id="admin-dashboard" class="admin-dashboard hidden">
+          <h3>Panel de administración</h3>
+          <button id="btn-logout" class="btn-small">Cerrar sesión</button>
+          <h4>Agregar vehículo</h4>
+          <form id="form-add-vehiculo" autocomplete="off">
+            <div class="form-row">
+              <div class="form-field">
+                <label for="add-marca">Marca</label>
+                <input type="text" id="add-marca" required />
+              </div>
+              <div class="form-field">
+                <label for="add-modelo">Modelo</label>
+                <input type="text" id="add-modelo" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="add-anio">Año</label>
+                <input type="number" id="add-anio" required />
+              </div>
+              <div class="form-field">
+                <label for="add-precio">Precio</label>
+                <!-- Permitir cualquier valor numérico sin paso fijo -->
+                <input type="number" id="add-precio" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="add-km">Kilómetros</label>
+                <!-- Permitir cualquier kilometraje sin paso fijo -->
+                <input type="number" id="add-km" required />
+              </div>
+              <div class="form-field">
+                <label for="add-destacado">Destacar</label>
+                <select id="add-destacado">
+                  <option value="false" selected>No</option>
+                  <option value="true">Sí</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="add-descripcion">Descripción</label>
+              <textarea id="add-descripcion" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <label>Fotos</label>
+              <div id="drop-area" class="drop-area">
+                <p>Arrastra y suelta imágenes aquí o selecciona desde tu equipo</p>
+                <input type="file" id="file-input" multiple accept="image/*" />
+              </div>
+              <div id="preview-imagenes" class="preview-imagenes"></div>
+            </div>
+            <button type="submit" class="btn-small">Agregar vehículo</button>
+          </form>
+          <h4>Lista de vehículos</h4>
+          <div id="admin-lista-vehiculos" class="admin-lista"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+  </body>
+</html>
