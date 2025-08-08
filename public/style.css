@@ -362,35 +362,44 @@ section h2 {
 
 /* Redes sociales: mostrar ícono y texto juntos */
 .social-links {
+  /* Mostrar las redes sociales en columna para que cada enlace
+     quede en una línea independiente. Esto crea un aspecto más
+     ordenado y legible en la sección de contacto. */
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 15px;
-  margin-top: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .social-links a {
-  display: inline-flex;
+  /* Cada enlace de red social se alinea horizontalmente con su icono. */
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 1rem;
-  color: var(--color-accent);
+  gap: 8px;
+  font-size: 1.05rem;
+  color: var(--color-primary);
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .social-links a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-accent);
 }
 
 /* Iconos de redes sociales: ajustamos el tamaño para que resulten
    visualmente equilibrados respecto al texto y mantenemos su color
    de acento. */
 .social-links i {
-  /* Incrementamos el tamaño de los íconos y aseguramos que tengan el color
-     de acento. El margen entre icono y texto se gestiona en el enlace. */
-  font-size: 1.5rem;
+  /* Ajustamos el tamaño de los íconos para que sean discretos y
+     mantengan su color característico. */
+  font-size: 1.3rem;
   color: var(--color-accent);
+}
+
+/* Ajuste de los iconos emoji utilizados para redes sociales */
+.social-icon {
+  font-size: 1.3rem;
 }
 
 .contacto-map iframe {
@@ -739,6 +748,10 @@ footer {
 /* ------------------------------------------------------------------
    Flechas de navegación en la página de detalle
 ------------------------------------------------------------------ */
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+}
 .nav-arrow {
   position: absolute;
   top: 50%;

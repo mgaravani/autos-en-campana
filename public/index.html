@@ -34,13 +34,10 @@
             <li><a href="#contacto">Contacto</a></li>
           </ul>
         </nav>
-        <!-- Enlace secreto del administrador: engranaje semioculto en la esquina superior derecha -->
-        <a href="#" id="admin-toggle" class="admin-secret" title="Administrador">
-          <!-- Utilizamos un carácter unicode de engranaje como fallback para
-               asegurar que el icono siempre sea visible incluso si la fuente
-               de Font Awesome no está disponible. -->
-          &#9881;
-        </a>
+        <!-- El enlace de administrador se elimina del DOM para ocultar su presencia.
+             Ahora el acceso al panel de administración se realiza mediante
+             un atajo de teclado (Ctrl + Alt + A). Consulte script.js para más detalles. -->
+
       </div>
     </header>
 
@@ -104,11 +101,6 @@
               placeholder="Sin límite"
             />
           </div>
-          <div class="filtro-item filtro-boton">
-            <button id="btn-aplicar-filtros" class="btn-small">
-              Aplicar filtros
-            </button>
-          </div>
           <!-- Botón para limpiar filtros -->
           <div class="filtro-item filtro-boton">
             <button id="btn-clear-filtros" class="btn-link">
@@ -142,22 +134,28 @@
               target="_blank"
               rel="noopener"
               aria-label="Facebook"
-              ><i class="fab fa-facebook"></i> Facebook</a
             >
+              <span class="social-icon">📘</span>
+              <span>Facebook</span>
+            </a>
             <a
               href="https://www.instagram.com/autosencampana/"
               target="_blank"
               rel="noopener"
               aria-label="Instagram"
-              ><i class="fab fa-instagram"></i> Instagram</a
             >
+              <span class="social-icon">📸</span>
+              <span>Instagram</span>
+            </a>
             <a
               href="https://wa.me/543489639033"
               target="_blank"
               rel="noopener"
               aria-label="Whatsapp"
-              ><i class="fab fa-whatsapp"></i> WhatsApp</a
             >
+              <span class="social-icon">💬</span>
+              <span>WhatsApp</span>
+            </a>
           </div>
         </div>
         <div class="contacto-map">

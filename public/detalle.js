@@ -69,24 +69,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       thumbs.appendChild(thumb);
     });
     // Flechas de navegación
+    let prevBtn;
+    let nextBtn;
     if (imagenes.length > 1) {
-      const prevBtn = document.createElement('button');
+      prevBtn = document.createElement('button');
       prevBtn.className = 'nav-arrow prev';
       prevBtn.type = 'button';
       prevBtn.innerHTML = '&lsaquo;';
       prevBtn.addEventListener('click', () => {
         updateMain(currentIndex - 1);
       });
-      const nextBtn = document.createElement('button');
+      nextBtn = document.createElement('button');
       nextBtn.className = 'nav-arrow next';
       nextBtn.type = 'button';
       nextBtn.innerHTML = '&rsaquo;';
       nextBtn.addEventListener('click', () => {
         updateMain(currentIndex + 1);
       });
-      mainSection.appendChild(prevBtn);
-      mainSection.appendChild(nextBtn);
     }
+    // Crear contenedor para la imagen principal y las flechas
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'image-wrapper';
+    imageWrapper.appendChild(mainImg);
+    // Si existen flechas de navegación, añadirlas al contenedor de imagen
+    if (prevBtn && nextBtn) {
+      imageWrapper.appendChild(prevBtn);
+      imageWrapper.appendChild(nextBtn);
+    }
+
     // Información del vehículo
     const info = document.createElement('div');
     info.className = 'info-section';
@@ -118,7 +128,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     whatsappLink.textContent = 'Consultar por WhatsApp';
     info.appendChild(whatsappLink);
     // Montar estructura
-    mainSection.appendChild(mainImg);
+    // Agregar la imagen envuelta (con flechas) y luego la información
+    mainSection.appendChild(imageWrapper);
     mainSection.appendChild(info);
     layout.appendChild(thumbs);
     layout.appendChild(mainSection);

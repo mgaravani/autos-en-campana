@@ -295,11 +295,9 @@
    * Configura los listeners de filtro.
    */
   function setupFilterListeners() {
-    // Al hacer clic en aplicar, filtrar manualmente (opcional para compatibilidad)
-    document.getElementById('btn-aplicar-filtros').addEventListener('click', (e) => {
-      e.preventDefault();
-      applyFilters();
-    });
+    // Ya no se utiliza el botón de aplicar filtros porque los filtros se aplican
+    // automáticamente al cambiar cualquier campo. Esta sección se deja vacía para
+    // compatibilidad futura.
     // Botón para limpiar filtros
     const clearBtn = document.getElementById('btn-clear-filtros');
     if (clearBtn) {
@@ -711,9 +709,14 @@
     // Setup listeners de filtros
     setupFilterListeners();
     // Eventos del administrador
-    document.getElementById('admin-toggle').addEventListener('click', (e) => {
-      e.preventDefault();
-      openAdmin();
+    // El acceso al panel de administración se realiza mediante
+    // combinación de teclas (Ctrl + Alt + A). Si el usuario
+    // presiona esta combinación, se abre el modal de administrador.
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.altKey && (e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+        openAdmin();
+      }
     });
     document.getElementById('btn-cerrar-admin').addEventListener('click', closeAdmin);
     // Botón de la X dentro del modal (permite cerrar sin cerrar sesión)
