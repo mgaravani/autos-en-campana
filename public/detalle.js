@@ -1,137 +1,130 @@
-// detalle.js
-// Este archivo maneja la página de detalles del vehículo. Carga la información del vehículo
-// seleccionado a partir del ID en la URL, muestra la galería de imágenes con miniaturas y
-// permite navegar entre ellas mediante flechas y clics. También muestra la información
-// detallada del vehículo y un botón para consultar por WhatsApp.
+/* detalle.js - Página de detalles para un vehículo específico con galería de miniaturas y contacto por WhatsApp */
 
-/**
- * Obtiene parámetros de la cadena de consulta de la URL.
- * @returns {Object} Objeto con claves y valores de los parámetros
- */
-function getQueryParams() {
-  return Object.fromEntries(new URLSearchParams(window.location.search));
-}
-
-let vehicles = [];
-let vehicle = null;
-let currentIndex = 0;
-
-const thumbnailsEl = document.getElementById('detalle-thumbnails');
-const mainImgEl = document.getElementById('detalle-main-img');
-const infoEl = document.getElementById('detalle-info');
-const arrowLeft = document.getElementById('arrow-left');
-const arrowRight = document.getElementById('arrow-right');
-
-/**
- * Solicita la lista de vehículos desde el backend.
- */
-async function fetchVehicles() {
-  try {
-    const res = await fetch('/api/vehiculos');
-    vehicles = await res.json();
-  } catch (err) {
-    console.error('Error fetching vehicles:', err);
-    vehicles = [];
-  }
-}
-
-/**
- * Encuentra el vehículo correspondiente al ID proporcionado y carga sus detalles.
- */
-function loadVehicle(id) {
-  vehicle = vehicles.find(v => v.id === parseInt(id, 10));
-  if (!vehicle) {
-    infoEl.innerHTML = '<p>Vehículo no encontrado.</p>';
+document.addEventListener('DOMContentLoaded', async () => {
+  // Obtener el parámetro id de la URL
+  const params = new URLSearchParams(window.location.search);
+  const idParam = params.get('id');
+  const id = idParam ? parseInt(idParam, 10) : null;
+  const cont = document.getElementById('detalle-content');
+  if (!id) {
+    cont.innerHTML = '<p>No se especificó ningún vehículo.</p>';
     return;
   }
-  // Renderizar miniaturas
-  thumbnailsEl.innerHTML = '';
-  (vehicle.imagenes || []).forEach((imgSrc, index) => {
-    const img = document.createElement('img');
-    img.src = imgSrc;
-    img.alt = `${vehicle.marca} ${vehicle.modelo} ${index + 1}`;
-    if (index === 0) img.classList.add('active');
-    img.addEventListener('click', () => {
-      updateMainImage(index);
+  try {
+    // Solicitar todos los vehículos al backend
+    const res = await fetch('/api/vehiculos');
+    if (!res.ok) throw new Error('Error al solicitar vehículos');
+    const vehicles = await res.json();
+    const vehiculo = vehicles.find((v) => v.id === id);
+    if (!vehiculo) {
+      cont.innerHTML = '<p>No se encontró el vehículo solicitado.</p>';
+      return;
+    }
+    // Preparar contenedor general
+    const layout = document.createElement('div');
+    layout.className = 'detalle-layout';
+    // Contenedor de miniaturas
+    const thumbs = document.createElement('div');
+    thumbs.className = 'thumbnails';
+    // Contenedor principal (imagen grande + info)
+    const mainSection = document.createElement('div');
+    mainSection.className = 'main-section';
+    // Imagen principal
+    const mainImg = document.createElement('img');
+    mainImg.className = 'detalle-main-img';
+    mainImg.style.objectFit = 'contain';
+    mainImg.style.width = '100%';
+    mainImg.style.height = 'auto';
+    // Tomar la primera imagen como principal
+    const imagenes = Array.isArray(vehiculo.imagenes) ? vehiculo.imagenes : [];
+    let currentIndex = 0;
+    if (imagenes.length) {
+      mainImg.src = imagenes[0];
+    } else {
+      mainImg.src = 'https://source.unsplash.com/featured/800x600/?car';
+    }
+    // Función para actualizar la imagen principal y el estado de las miniaturas
+    function updateMain(index) {
+      if (!imagenes.length) return;
+      currentIndex = (index + imagenes.length) % imagenes.length;
+      mainImg.src = imagenes[currentIndex];
+      // Actualizar clases activas en miniaturas
+      const allThumbs = thumbs.querySelectorAll('img');
+      allThumbs.forEach((t) => t.classList.remove('active'));
+      const currentThumb = allThumbs[currentIndex];
+      if (currentThumb) currentThumb.classList.add('active');
+    }
+    // Crear miniaturas y permitir seleccionar la imagen principal.
+    imagenes.forEach((imgSrc, idx) => {
+      const thumb = document.createElement('img');
+      thumb.src = imgSrc;
+      thumb.className = 'thumbnail';
+      // Marcar la primera imagen como activa por defecto
+      if (idx === 0) {
+        thumb.classList.add('active');
+      }
+      thumb.addEventListener('click', () => {
+        updateMain(idx);
+      });
+      thumbs.appendChild(thumb);
     });
-    thumbnailsEl.appendChild(img);
-  });
-  // Mostrar primera imagen
-  currentIndex = 0;
-  updateMainImage(0);
-  // Mostrar información
-  renderInfo();
-}
-
-/**
- * Actualiza la imagen principal y resalta la miniatura activa.
- * @param {number} index Índice de la imagen a mostrar
- */
-function updateMainImage(index) {
-  if (!vehicle || !vehicle.imagenes || vehicle.imagenes.length === 0) return;
-  currentIndex = index;
-  mainImgEl.src = vehicle.imagenes[index];
-  // Actualizar selección en miniaturas
-  const thumbs = thumbnailsEl.querySelectorAll('img');
-  thumbs.forEach((img, idx) => {
-    if (idx === index) img.classList.add('active');
-    else img.classList.remove('active');
-  });
-}
-
-/**
- * Navega a la imagen anterior o siguiente del carrusel.
- * @param {number} delta -1 para izquierda, 1 para derecha
- */
-function navigate(delta) {
-  if (!vehicle || !vehicle.imagenes || vehicle.imagenes.length === 0) return;
-  const count = vehicle.imagenes.length;
-  let newIndex = (currentIndex + delta + count) % count;
-  updateMainImage(newIndex);
-}
-
-/**
- * Renderiza la información textual del vehículo y el botón de WhatsApp.
- */
-function renderInfo() {
-  if (!vehicle) return;
-  infoEl.innerHTML = '';
-  const title = document.createElement('h2');
-  title.textContent = `${vehicle.marca} ${vehicle.modelo}`;
-  infoEl.appendChild(title);
-  const year = document.createElement('p');
-  year.textContent = `Año: ${vehicle.anio}`;
-  infoEl.appendChild(year);
-  const price = document.createElement('p');
-  price.textContent = `Precio: $${vehicle.precio.toLocaleString()}`;
-  infoEl.appendChild(price);
-  const kms = document.createElement('p');
-  kms.textContent = `Kilómetros: ${vehicle.kilometros.toLocaleString()} km`;
-  infoEl.appendChild(kms);
-  const desc = document.createElement('p');
-  desc.textContent = `Descripción: ${vehicle.descripcion}`;
-  infoEl.appendChild(desc);
-  // Botón WhatsApp
-  const btn = document.createElement('a');
-  btn.className = 'btn-whatsapp';
-  const msg = encodeURIComponent(`Hola, me interesa el vehículo ${vehicle.marca} ${vehicle.modelo}. ¿Está disponible?`);
-  btn.href = `https://wa.me/543489639033?text=${msg}`;
-  btn.target = '_blank';
-  btn.textContent = 'Consultar por WhatsApp';
-  infoEl.appendChild(btn);
-}
-
-// Configurar eventos de navegación por flechas
-arrowLeft.addEventListener('click', () => navigate(-1));
-arrowRight.addEventListener('click', () => navigate(1));
-
-// Inicializar página
-document.addEventListener('DOMContentLoaded', async () => {
-  await fetchVehicles();
-  const params = getQueryParams();
-  if (params.id) {
-    loadVehicle(params.id);
-  } else {
-    infoEl.innerHTML = '<p>Vehículo no encontrado.</p>';
+    // Flechas de navegación
+    if (imagenes.length > 1) {
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'nav-arrow prev';
+      prevBtn.type = 'button';
+      prevBtn.innerHTML = '&lsaquo;';
+      prevBtn.addEventListener('click', () => {
+        updateMain(currentIndex - 1);
+      });
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'nav-arrow next';
+      nextBtn.type = 'button';
+      nextBtn.innerHTML = '&rsaquo;';
+      nextBtn.addEventListener('click', () => {
+        updateMain(currentIndex + 1);
+      });
+      mainSection.appendChild(prevBtn);
+      mainSection.appendChild(nextBtn);
+    }
+    // Información del vehículo
+    const info = document.createElement('div');
+    info.className = 'info-section';
+    // Título
+    const titulo = document.createElement('h2');
+    titulo.textContent = vehiculo.marca + ' ' + vehiculo.modelo;
+    info.appendChild(titulo);
+    // Año
+    const anioP = document.createElement('p');
+    anioP.innerHTML = '<strong>Año:</strong> ' + vehiculo.anio;
+    info.appendChild(anioP);
+    // Precio
+    const precioP = document.createElement('p');
+    precioP.innerHTML = '<strong>Precio:</strong> $' + (vehiculo.precio ? vehiculo.precio.toLocaleString() : '');
+    info.appendChild(precioP);
+    // Kilómetros
+    const kmP = document.createElement('p');
+    kmP.innerHTML = '<strong>Kilómetros:</strong> ' + (vehiculo.km ? vehiculo.km.toLocaleString() + ' km' : '');
+    info.appendChild(kmP);
+    // Descripción
+    const descP = document.createElement('p');
+    descP.innerHTML = '<strong>Descripción:</strong> ' + (vehiculo.descripcion || '');
+    info.appendChild(descP);
+    // Botón WhatsApp
+    const whatsappLink = document.createElement('a');
+    whatsappLink.href = 'https://wa.me/543489639033?text=' + encodeURIComponent('Hola, me interesa el ' + vehiculo.marca + ' ' + vehiculo.modelo + '.');
+    whatsappLink.className = 'btn-whatsapp';
+    whatsappLink.target = '_blank';
+    whatsappLink.textContent = 'Consultar por WhatsApp';
+    info.appendChild(whatsappLink);
+    // Montar estructura
+    mainSection.appendChild(mainImg);
+    mainSection.appendChild(info);
+    layout.appendChild(thumbs);
+    layout.appendChild(mainSection);
+    cont.appendChild(layout);
+  } catch (err) {
+    console.error(err);
+    cont.innerHTML = '<p>Error al cargar los detalles del vehículo.</p>';
   }
 });

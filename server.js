@@ -1,138 +1,183 @@
+/*
+ * server.js - Servidor backend para la aplicación "Autos en Campana"
+ *
+ * Este servidor está basado en Express.js y proporciona una sencilla API
+ * REST para gestionar el catálogo de vehículos. En esta versión los
+ * datos de los vehículos se almacenan en una base de datos MongoDB a
+ * través de mongoose. Las imágenes se envían como DataURL o
+ * directamente como URL y se almacenan dentro del documento de la
+ * base de datos en un array de cadenas. De esta manera, el catá-
+ * logo persiste entre reinicios del servidor y no depende del
+ * sistema de archivos local.
+ *
+ * Endpoints:
+ *   GET    /api/vehiculos          → Devuelve el listado completo de vehículos en JSON.
+ *   POST   /api/vehiculos          → Recibe un vehículo con sus imágenes (DataURLs o URLs) y lo
+ *                                    guarda en la base de datos. Asigna un id incremental.
+ *   DELETE /api/vehiculos/:id      → Elimina un vehículo por su ID.
+ *
+ * Almacenamiento de imágenes:
+ *   El cliente envía las imágenes como DataURLs (por ejemplo,
+ *   "data:image/jpeg;base64,...") o URLs remotas. Este servidor
+ *   almacena directamente las cadenas en MongoDB en el campo
+ *   `imagenes` del documento. No se utilizan archivos físicos en
+ *   `uploads/` para evitar problemas de persistencia en servicios de
+ *   hosting gratuitos como Render o Railway.
+ */
+
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const path = require('path');
+// Importar mongoose para conectar con MongoDB
+const mongoose = require('mongoose');
 
-// Create the express application
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Allow cross‑origin requests so the front‑end can talk to this server
-app.use(cors());
-
-// Increase request body limit to allow for base64 encoded images
-app.use(express.json({ limit: '10mb' }));
-
-// Connect to MongoDB using the connection string defined in the MONGO_URL environment variable.
-// When you deploy this application on Railway or another host, you'll configure this variable
-// in the service's settings. If MONGO_URL is not provided, the server will log an error and exit.
-const mongoUrl = process.env.MONGO_URL;
-
-if (!mongoUrl) {
-  console.error('Error: MONGO_URL environment variable is not set.');
-  console.error('Please set MONGO_URL to the connection string for your MongoDB database.');
-  process.exit(1);
-}
-
+/*
+ * Conexión a MongoDB
+ *
+ * Este backend utiliza MongoDB a través de mongoose para persistir los
+ * vehículos y sus imágenes. La cadena de conexión debe estar
+ * especificada en la variable de entorno MONGO_URL (por ejemplo,
+ * mongodb+srv://usuario:contraseña@cluster.mongodb.net/nombredb). Si no
+ * se define, se utiliza una base de datos local para desarrollo.
+ */
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost/autosencampana';
 mongoose
-  .connect(mongoUrl)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => {
-    console.error('❌ Failed to connect to MongoDB:', err);
-    process.exit(1);
+  .connect(MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Conectado a MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error conectando a MongoDB:', err);
   });
 
-// Define a schema for storing vehicle data. Each vehicle record includes an incrementing
-// numeric id and an array of image data URIs. Storing images as data URIs keeps the entire
-// vehicle record self‑contained in the database and avoids the need for a persistent file system.
-const vehicleSchema = new mongoose.Schema({
-  id: { type: Number, required: true, unique: true },
-  marca: { type: String, required: true },
-  modelo: { type: String, required: true },
-  anio: { type: Number, required: true },
-  precio: { type: Number, required: true },
-  kilometros: { type: Number, required: true },
-  descripcion: { type: String, required: true },
-  destacado: { type: Boolean, default: false },
-  imagenes: { type: [String], default: [] }
-});
-
+// Definir el esquema y modelo para vehículos. Se utiliza un campo
+// numérico `id` como identificador incremental, además del _id de
+// MongoDB. Las imágenes se almacenan como DataURL o URLs en un
+// array de cadenas.
+const vehicleSchema = new mongoose.Schema(
+  {
+    id: { type: Number, unique: true },
+    marca: String,
+    modelo: String,
+    anio: Number,
+    precio: Number,
+    km: Number,
+    descripcion: String,
+    destacado: Boolean,
+    imagenes: [String],
+  },
+  { timestamps: true }
+);
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
-/**
- * Retrieve all vehicles from the database. Vehicles are sorted by their id so that the order
- * remains consistent between page loads. The response is a JSON array of objects.
- */
-app.get('/api/vehiculos', async (req, res) => {
-  try {
-    const vehicles = await Vehicle.find().sort('id');
-    res.json(vehicles);
-  } catch (err) {
-    console.error('Error fetching vehicles:', err);
-    res.status(500).json({ error: 'Failed to fetch vehicles' });
-  }
-});
+// Configurar middlewares
+app.use(cors());
+// Ampliar el límite de JSON para admitir imágenes codificadas en base64
+app.use(express.json({ limit: '20mb' }));
 
-/**
- * Determine the next id for a new vehicle by finding the current maximum id and adding one.
- * If no vehicles exist, start with id 1.
- */
-async function getNextVehicleId() {
-  const lastVehicle = await Vehicle.findOne().sort({ id: -1 });
-  return lastVehicle ? lastVehicle.id + 1 : 1;
+// Servir archivos estáticos (frontend)
+app.use('/', express.static(path.join(__dirname, 'public')));
+
+// Leer vehículos desde MongoDB. Devuelve un array de vehículos. En caso de
+// error, retorna un array vacío. Utilizado internamente para GET.
+async function readVehicles() {
+  try {
+    const list = await Vehicle.find().sort({ id: 1 }).lean().exec();
+    return list;
+  } catch (err) {
+    console.error('Error leyendo vehículos de MongoDB:', err);
+    return [];
+  }
 }
 
-/**
- * Add a new vehicle to the database. The request body should include all required fields
- * (marca, modelo, anio, precio, kilometros, descripcion, destacado) and an array of
- * base64‑encoded image strings in `imagenes`. Images should be compressed on the
- * client side before being sent to minimize payload size and storage requirements.
- */
-app.post('/api/vehiculos', async (req, res) => {
+// Obtener el siguiente identificador incremental
+async function getNextId() {
   try {
-    const { marca, modelo, anio, precio, kilometros, descripcion, destacado, imagenes } = req.body;
-    // Validate required fields
-    if (!marca || !modelo || !anio || !precio || !kilometros || !descripcion) {
-      return res.status(400).json({ error: 'Missing required vehicle fields' });
-    }
-    const newId = await getNextVehicleId();
-    const vehicle = await Vehicle.create({
-      id: newId,
-      marca,
-      modelo,
-      anio,
-      precio,
-      kilometros,
-      descripcion,
-      destacado: Boolean(destacado),
-      imagenes: Array.isArray(imagenes) ? imagenes : []
-    });
-    res.json(vehicle);
+    const last = await Vehicle.findOne().sort({ id: -1 }).lean().exec();
+    return last && typeof last.id === 'number' ? last.id + 1 : 1;
   } catch (err) {
-    console.error('Error creating vehicle:', err);
-    res.status(500).json({ error: 'Failed to create vehicle' });
+    console.error('Error obteniendo próximo id:', err);
+    return 1;
+  }
+}
+
+// Endpoint: Obtener todos los vehículos
+app.get('/api/vehiculos', async (req, res) => {
+  try {
+    const vehicles = await readVehicles();
+    res.json(vehicles);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener vehículos' });
   }
 });
 
-/**
- * Delete a vehicle by id. If no vehicle matches the provided id, a 404 status is returned.
- */
-app.delete('/api/vehiculos/:id', async (req, res) => {
+// Endpoint: Crear un nuevo vehículo
+app.post('/api/vehiculos', async (req, res) => {
+  const { marca, modelo, anio, precio, km, descripcion, destacado, imagenes } = req.body;
+  if (!marca || !modelo) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = await getNextId();
+    // Construir lista de imágenes. Si es DataURL, almacenar la cadena completa.
+    // Si ya es una URL externa, almacenarla tal cual.
+    const imgList = Array.isArray(imagenes)
+      ? imagenes.map((img) => {
+          if (typeof img === 'string') return img;
+          if (img && typeof img.src === 'string') return img.src;
+          return '';
+        })
+      : [];
+    const nuevo = new Vehicle({
+      id,
+      marca,
+      modelo,
+      anio: parseInt(anio, 10) || null,
+      precio: parseFloat(precio) || null,
+      km: parseInt(km, 10) || null,
+      descripcion: descripcion || '',
+      destacado: !!destacado,
+      imagenes: imgList,
+    });
+    await nuevo.save();
+    res.status(201).json({ success: true, id });
+  } catch (err) {
+    console.error('Error al crear vehículo:', err);
+    res.status(500).json({ error: 'Error interno al guardar el vehículo' });
+  }
+});
+
+// Endpoint: Eliminar un vehículo por ID
+app.delete('/api/vehiculos/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).json({ error: 'ID inválido' });
+  }
+  try {
     const result = await Vehicle.deleteOne({ id });
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Vehicle not found' });
+      return res.status(404).json({ error: 'Vehículo no encontrado' });
     }
     res.json({ success: true });
   } catch (err) {
-    console.error('Error deleting vehicle:', err);
-    res.status(500).json({ error: 'Failed to delete vehicle' });
+    console.error('Error al eliminar vehículo:', err);
+    res.status(500).json({ error: 'Error interno al eliminar vehículo' });
   }
 });
 
-// Serve static files from the public directory. This allows the front‑end HTML, CSS and
-// JavaScript files to be delivered directly by the Express server.
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Fallback: for any unknown route, respond with the index.html. This supports client‑side
-// routing via JavaScript and ensures direct navigation to routes such as /detalle.html
-// works properly when deployed.
+// Fallback: redirigir todas las rutas no API al frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start the server on the port provided by Railway or default to 3000 if not specified.
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Arrancar el servidor
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en puerto ${PORT}`);
 });
