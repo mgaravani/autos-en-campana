@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detalle del Vehículo - Autos en Campana</title>
-    <!-- Reutilizar estilos principales -->
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <div class="container header-container">
-        <a href="index.html" class="logo-wrap">
-          <img src="assets/logo-gris.png" alt="Autos en Campana" class="logo" />
-        </a>
-        <nav class="main-nav">
-          <ul>
-            <li><a href="index.html#inicio">Inicio</a></li>
-            <li><a href="index.html#vehiculos">Nuestros vehículos</a></li>
-            <li><a href="index.html#contacto">Contacto</a></li>
-          </ul>
-        </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle del vehículo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Cabecera reutilizada -->
+  <header class="site-header">
+    <div class="logo-container">
+      <h1 class="logo-text">Autos en Campana</h1>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html#inicio">Inicio</a></li>
+        <li><a href="index.html#vehiculos">Nuestros vehículos</a></li>
+        <li><a href="index.html#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="detalle-page" style="padding: 2rem 1rem; max-width: var(--max-width); margin: 0 auto;">
+    <a href="javascript:history.back()" class="btn-link">← Volver</a>
+    <div id="detalle-container" class="detalle-container">
+      <div class="thumbnails" id="detalle-thumbnails"></div>
+      <div class="detalle-main">
+        <button class="arrow-btn arrow-left" id="arrow-left">‹</button>
+        <img id="detalle-main-img" class="detalle-main-img" src="" alt="Imagen del vehículo" />
+        <button class="arrow-btn arrow-right" id="arrow-right">›</button>
+        <div class="info-section" id="detalle-info"></div>
       </div>
-    </header>
-    <main class="detalle-container">
-      <a href="index.html#vehiculos" class="volver-link">← Volver al catálogo</a>
-      <div id="detalle-content"></div>
-    </main>
-    <script src="detalle.js"></script>
-  </body>
+    </div>
+  </main>
+  <script src="detalle.js" defer></script>
+</body>
 </html>

@@ -1,24 +1,14 @@
 {
-  "name": "autos-en-campana-server",
+  "name": "autos-en-campana",
   "version": "1.0.0",
-  "description": "Aplicación web Autos en Campana con backend Express para almacenar vehículos e imágenes en el servidor.",
+  "description": "Autos en Campana website with Node.js/Express and MongoDB",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [
-    "autos",
-    "campana",
-    "express",
-    "node",
-    "backend"
-  ],
-  "author": "", 
-  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.2"
-    ,
-    "mongoose": "^7.6.1"
+    "express": "^4.18.2",
+    "mongoose": "^7.4.0"
   }
 }
