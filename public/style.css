@@ -707,3 +707,10 @@ footer {
   margin-top: 10px;
   width: 100%;
 }
+.social-links .social-svg {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  color: var(--color-accent); /* hereda a fill via currentColor */
+}
+
